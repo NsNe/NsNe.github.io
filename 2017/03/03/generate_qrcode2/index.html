@@ -1,0 +1,889 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="QR Codes," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;继上一篇文章https://nsne.github.io/2017/03/01/generate_qrcode/#more（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个保存太慢了，生成的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用Google QR Codes API生成二维码名片（二）">
+<meta property="og:url" content="https://nsne.github.io/2017/03/03/generate_qrcode2/index.html">
+<meta property="og:site_name" content="NsNe的博客">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;继上一篇文章https://nsne.github.io/2017/03/01/generate_qrcode/#more（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个保存太慢了，生成的">
+<meta property="og:image" content="https://nsne.github.io/images/helloWorld.png">
+<meta property="og:image" content="https://nsne.github.io/images/qrcode1.jpg">
+<meta property="og:image" content="https://nsne.github.io/images/qrcode1-result.png">
+<meta property="og:updated_time" content="2017-03-09T05:17:22.930Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="利用Google QR Codes API生成二维码名片（二）">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;继上一篇文章https://nsne.github.io/2017/03/01/generate_qrcode/#more（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个保存太慢了，生成的">
+<meta name="twitter:image" content="https://nsne.github.io/images/helloWorld.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6385070718043817000',
+      author: 'wlt'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://nsne.github.io/2017/03/03/generate_qrcode2/"/>
+
+
+
+
+
+  <title> 利用Google QR Codes API生成二维码名片（二） | NsNe的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c210e35452b53e65e2d7d9f0996106e3";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">NsNe的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle">Quick notes</p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://nsne.github.io/2017/03/03/generate_qrcode2/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="wlt">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="NsNe的博客">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="NsNe的博客" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                利用Google QR Codes API生成二维码名片（二）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-03T14:55:16+08:00">
+                2017-03-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/二维码/" itemprop="url" rel="index">
+                    <span itemprop="name">二维码</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/03/generate_qrcode2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/03/generate_qrcode2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/03/03/generate_qrcode2/" class="leancloud_visitors" data-flag-title="利用Google QR Codes API生成二维码名片（二）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;继上一篇文章<a href="https://nsne.github.io/2017/03/01/generate_qrcode/#more">https://nsne.github.io/2017/03/01/generate_qrcode/#more</a>（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个保存太慢了，生成的名片还不好看，爱美之心，人皆有之，要不然别人一扫，就尴尬了）。在上篇文章中我们说了，Google API生成二维码，实质上就是发送一系列参数的请求，返回结果是一个二维码。这时，就有小伙伴发现了，你这还不是一个个发请求，一个个手动保存，而且名片也丑的不忍直视（没有任何的修饰）。接下来，我们来解决这两个关键问题，一、自动下载保存（即可以批量生成）, 二、名片太丑啦。</p>
+<a id="more"></a>
+<h1 id="接口回忆"><a href="#接口回忆" class="headerlink" title="接口回忆"></a>接口回忆</h1><p>&emsp;&emsp;我们调用Google生成二维码的接口为<a href="https://chart.googleapis.com/chart，参数及其含义如下：" target="_blank" rel="external">https://chart.googleapis.com/chart，参数及其含义如下：</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">cht=qr    必须的参数   指定是一个二维码  例: cht=qr</div><div class="line">chs=&lt;width&gt;x&lt;height&gt;    必须的参数   指定图片的大小</div><div class="line">chl=&lt;data&gt;   必须的参数   指定内容</div><div class="line">choe=&lt;output_encoding&gt;  可选的参数   内容的编码，默认为utf-8，可选的有: UTF-8(默认就是这个),  Shift_JIS, ISO-8859-1</div><div class="line">chld=&lt;error_correction_level&gt;|&lt;margin&gt;   可选的参数    error_correction_level为错误纠正， L(默认): 允许恢复高达7%的数据丢失  M: 允许回复高达15%的数据丢失 Q: 25% H:30%</div><div class="line">                                                      margin   数据部分周围的白色边框的宽度，单位是行，不是html中的像素，默认为4</div></pre></td></tr></table></figure></p>
+<p>实质上发送一个请求就得到了一个二维码，其中chl参数表示我们在扫码之后的数据(这个二维码扫描后显示”hello世界”):</p>
+<p><a href="https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=hello世界&amp;choe=UTF-8&amp;chld=L|4" target="_blank" rel="external">https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=hello世界&amp;choe=UTF-8&amp;chld=L|4</a></p>
+<p><img src="/images/helloWorld.png" alt="生成的二维码"></p>
+<h1 id="自动下载"><a href="#自动下载" class="headerlink" title="自动下载"></a>自动下载</h1><p>&emsp;&emsp;仔细想想，我们做下载文件功能时，有时候会用window.open([url]);浏览器会自动帮你下载它。但是但是但是…，当你运行如下的js时：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.open(<span class="string">'https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=hello世界&amp;choe=UTF-8&amp;chld=L|4'</span>)</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;你会发现在新窗口打开了一个页面，页面的内容，不是其他的，正是url返回的二维码图片。至于为什么会这样呢？这和浏览器的渲染引擎有关，默认情况下渲染引擎可以显示HTML，XML以及图片，所以图片直接显示在页面了，在此不深究了（有兴趣的同学可以在网上搜索“浏览器是怎样工作的”去研究研究）。还有一种方法是使用html5的download属性(例：<a href="http://www.w3school.com.cn/tiy/t.asp?f=html_a_download" target="_blank" rel="external">http://www.w3school.com.cn/tiy/t.asp?f=html_a_download</a>),但是这种方式还是需要手动触发点击，那怎么办呢，于是想到我们能不能用代码触发下载呢，答案是当然可以。</p>
+<p>&emsp;&emsp;我们运行如下js：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">var URL = window.URL || window.webkitURL;</div><div class="line">var a = document.createElement(&apos;a&apos;);</div><div class="line">var url = &apos;https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=hello%E4%B8%96%E7%95%8C&amp;choe=UTF-8&amp;chld=L|4&apos;;</div><div class="line">var filename = &apos;myqrcode&apos;;</div><div class="line">a.href = url; </div><div class="line">a.download = filename;</div><div class="line">if(document.all)&#123;   //此处是为了浏览器兼容性 </div><div class="line">   a.click();</div><div class="line">&#125;</div><div class="line">else&#123;</div><div class="line">   var evt = document.createEvent(&quot;MouseEvents&quot;);</div><div class="line">   evt.initEvent(&quot;click&quot;, true, true);</div><div class="line">   a.dispatchEvent(evt);</div><div class="line">&#125;</div><div class="line">URL.revokeObjectURL(url);</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;在chrome中运行，可以自动下载二维码图片（名为chart.png, 而不是我们定义的download属性名）太他娘的不科学了。经过查阅：在Chrome和Opear中，如果说下载文件不是在子集的服务器或域名中，这些浏览器会忽视download属性，换句话来说，文件名不变。于是加上了createObjectURL方法，来生成一个url，不明白此方法的自行到<a href="https://developer.mozilla.org/zh-CN/docs/Web/API/URL/createObjectURL" target="_blank" rel="external">https://developer.mozilla.org/zh-CN/docs/Web/API/URL/createObjectURL</a>中查看，此处不再啰嗦,我在这里将图片保存为jpg。利用fetch API的写法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">var URL = window.URL || window.webkitURL;</div><div class="line">fetch(&apos;https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=hello%E4%B8%96%E7%95%8C&amp;choe=UTF-8&amp;chld=L|4&apos;)</div><div class="line">    .then(</div><div class="line">        res =&gt; res.blob()</div><div class="line">        .then(blob =&gt; &#123; </div><div class="line">            var a = document.createElement(&apos;a&apos;); </div><div class="line">            var url = URL.createObjectURL(blob);</div><div class="line">            var filename = &apos;myfile.jpg&apos;;</div><div class="line">            a.href = url; </div><div class="line">            a.download = filename;</div><div class="line">            if(document.all)&#123;</div><div class="line">               a.click();</div><div class="line">             &#125;</div><div class="line">             else&#123;</div><div class="line">               var evt = document.createEvent(&quot;MouseEvents&quot;);</div><div class="line">               evt.initEvent(&quot;click&quot;, true, true);</div><div class="line">               a.dispatchEvent(evt);</div><div class="line">             &#125;</div><div class="line">            URL.revokeObjectURL(url); </div><div class="line">        &#125;)</div><div class="line">    )</div></pre></td></tr></table></figure>
+<p>相应的，我们亦可以用ajax来实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">var URL = window.URL || window.webkitURL;</div><div class="line">var xhr = new XMLHttpRequest();</div><div class="line">xhr.open(&apos;get&apos;, &apos;https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=hello世界哈哈&amp;choe=UTF-8&amp;chld=L|4&apos;, true);</div><div class="line"></div><div class="line">xhr.responseType = &apos;blob&apos;;</div><div class="line"></div><div class="line">xhr.onload = function(e) &#123;</div><div class="line">  if (this.status == 200) &#123;</div><div class="line">    var blob = this.response;</div><div class="line">     var a = document.createElement(&apos;a&apos;); </div><div class="line">     var url = URL.createObjectURL(blob); </div><div class="line">     var filename = &apos;myfile.jpg&apos;; </div><div class="line">     a.href = url; </div><div class="line">     a.download = filename; </div><div class="line">     if(document.all)&#123;</div><div class="line">        a.click();</div><div class="line">      &#125;</div><div class="line">      else&#123;</div><div class="line">        var evt = document.createEvent(&quot;MouseEvents&quot;);</div><div class="line">        evt.initEvent(&quot;click&quot;, true, true);</div><div class="line">        a.dispatchEvent(evt);</div><div class="line">      &#125;</div><div class="line">     URL.revokeObjectURL(url); </div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">xhr.send();</div></pre></td></tr></table></figure></p>
+<h1 id="美化名片"><a href="#美化名片" class="headerlink" title="美化名片"></a>美化名片</h1><p>&emsp;&emsp;这里介绍两种名片格式VCARD和MECARD。VCARD是<em>*</em>联盟提出的电子名片的格式标准，一般用于商业名片，各个属性之间用’\r\n’分割，MECARD由日本某公司指定的数据格式。下面给出了两种数据格式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">var data = [</div><div class="line">&apos;BEGIN:VCARD&apos;,   //开头标识</div><div class="line">&apos;VERSION:4.0&apos;,   //版本</div><div class="line">&apos;N:123;Forrest;;Mr.&apos;,   //姓名</div><div class="line">&apos;FN:Forrest Gump&apos;,</div><div class="line">&apos;ORG: 中华人民共和国组织&apos;,     //组织</div><div class="line">&apos;TITLE: 职位&apos;,     //职位</div><div class="line">&apos;PHOTO;GIF: https://nsne.github.io/uploads/avatar.jpg&apos;,    //照片</div><div class="line">&apos;TEL;WORK;VOICE: 工作电话11111&apos;,   //工作电话</div><div class="line">&apos;TEL;HOME;VOICE: 家庭电话2222&apos;,    //家庭电话</div><div class="line">&apos;ADR;WORK;PREF:;;中华人民共和国地球村&apos;,    //工作地址</div><div class="line">&apos;ADR;HOME:;;中华人民共和国&apos;,    //家庭地址</div><div class="line">&apos;EMAIL: 123456798@qq.com&apos;,    //邮箱</div><div class="line">&apos;REV:20160303&apos;,    //类型定义，指定当前vcard的修改信息</div><div class="line">&apos;END:VCARD&apos;   //结束标识</div><div class="line">].join(&apos;\r\n&apos;)</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">var data = [&apos;MECARD:&apos;,</div><div class="line">&apos;N:姓名&apos;,         //姓名</div><div class="line">&apos;NICKNAME: 昵称&apos;,</div><div class="line">&apos;TEL: 12345678&apos;,     //电话</div><div class="line">&apos;TEL-AV: 可视电话号码&apos;,</div><div class="line">&apos;EMAIL:123456789@qq.com&apos;,    //邮箱</div><div class="line">&apos;ADR: 陕西西安&apos;,               //地址</div><div class="line">&apos;URL:https://nsne.github.io&apos;,   //网址</div><div class="line">&apos;NOTE:很好的一个家伙&apos;,    //备注</div><div class="line">&apos;BDAY: 199549848&apos;,</div><div class="line">].join(&apos;;&apos;)</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;于是乎我们的代码变成了下面这个样子（这里用MECARD演示）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">var data = [</div><div class="line">&apos;MECARD:&apos;,</div><div class="line">&apos;N:姓名&apos;,         //姓名</div><div class="line">&apos;NICKNAME: 昵称&apos;,</div><div class="line">&apos;TEL: 12345678&apos;,     //电话</div><div class="line">&apos;TEL-AV: 可视电话号码&apos;,</div><div class="line">&apos;EMAIL:123456789@qq.com&apos;,    //邮箱</div><div class="line">&apos;ADR: 陕西西安&apos;,               //地址</div><div class="line">&apos;URL:https://nsne.github.io&apos;,   //网址</div><div class="line">&apos;NOTE:很好的一个家伙&apos;,    //备注</div><div class="line">&apos;BDAY: 1956416&apos;,</div><div class="line">].join(&apos;;&apos;)</div><div class="line"></div><div class="line">var URL = window.URL || window.webkitURL;</div><div class="line">var xhr = new XMLHttpRequest();</div><div class="line">var url = &apos;https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=&apos; + data + &apos;&amp;choe=UTF-8&amp;chld=L|4&apos;</div><div class="line">xhr.open(&apos;get&apos;, url, true);</div><div class="line"></div><div class="line">xhr.responseType = &apos;blob&apos;;</div><div class="line"></div><div class="line">xhr.onload = function(e) &#123;</div><div class="line">  if (this.status == 200) &#123;</div><div class="line">    var blob = this.response;</div><div class="line">     var a = document.createElement(&apos;a&apos;); </div><div class="line">     var url = URL.createObjectURL(blob); </div><div class="line">     var filename = &apos;myfile.jpg&apos;; </div><div class="line">     a.href = url; </div><div class="line">     a.download = filename; </div><div class="line">     if(document.all)&#123;</div><div class="line">        a.click();</div><div class="line">      &#125;</div><div class="line">      else&#123;</div><div class="line">        var evt = document.createEvent(&quot;MouseEvents&quot;);</div><div class="line">        evt.initEvent(&quot;click&quot;, true, true);</div><div class="line">        a.dispatchEvent(evt);</div><div class="line">      &#125;</div><div class="line">     URL.revokeObjectURL(url); </div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line">xhr.send();</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;生成二维码以及用微信扫描的结果如下，保存按钮可以将名片信息保存到通讯录:<br><img src="/images/qrcode1.jpg" style="float: left;margin-left: 40px; ">     <img src="/images/qrcode1-result.png" style="width: 40%; height: 40%;">  </p>
+<h1 id="批量生成"><a href="#批量生成" class="headerlink" title="批量生成"></a>批量生成</h1><p>&emsp;&emsp;接下来我们来构建一组数据，生成这组数据的二维码并自动保存到我们的本地磁盘，上code。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">//一组数据</div><div class="line">var data = [</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名1&apos;,</div><div class="line">        nickName: &apos;昵称1&apos;,</div><div class="line">        tel: &apos;电话1&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名2&apos;,</div><div class="line">        nickName: &apos;昵称2&apos;,</div><div class="line">        tel: &apos;电话2&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名3&apos;,</div><div class="line">        nickName: &apos;昵称3&apos;,</div><div class="line">        tel: &apos;电话3&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名4&apos;,</div><div class="line">        nickName: &apos;昵称4&apos;,</div><div class="line">        tel: &apos;电话4&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名5&apos;,</div><div class="line">        nickName: &apos;昵称5&apos;,</div><div class="line">        tel: &apos;电话5&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;</div><div class="line">];</div><div class="line"></div><div class="line">var URL = window.URL || window.webkitURL;</div><div class="line"></div><div class="line">for(var i = 0; i &lt; data.length; i++) &#123;</div><div class="line">    var qrdata = [</div><div class="line">        &apos;MECARD:&apos;,</div><div class="line">        &apos;N:&apos; + data[i].name,         //姓名</div><div class="line">        &apos;NICKNAME: &apos; + data[i].nickName,</div><div class="line">        &apos;TEL: &apos; + data[i].tel,     //电话</div><div class="line">        &apos;EMAIL: &apos; + data[i].email,    //邮箱</div><div class="line">        &apos;NOTE: &apos; + data[i].note,    //备注</div><div class="line">    ].join(&apos;;&apos;);</div><div class="line">    var xhr = new XMLHttpRequest();</div><div class="line">    var url = &apos;https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=&apos; + qrdata + &apos;&amp;choe=UTF-8&amp;chld=L|4&apos;</div><div class="line">    xhr.open(&apos;get&apos;, url, true);</div><div class="line">    </div><div class="line">    xhr.responseType = &apos;blob&apos;;</div><div class="line">    </div><div class="line">    xhr.onload = function(e) &#123;</div><div class="line">        if (this.status == 200) &#123;</div><div class="line">            var blob = this.response;</div><div class="line">            var a = document.createElement(&apos;a&apos;); </div><div class="line">            var url = URL.createObjectURL(blob);</div><div class="line">            var filename = data[i].name + &apos;.jpg&apos;;    //以姓名来命名下载的二维码图片名称 </div><div class="line">            a.href = url; </div><div class="line">            a.download = filename; </div><div class="line">            if(document.all)&#123;</div><div class="line">                a.click();</div><div class="line">            &#125;</div><div class="line">            else&#123;</div><div class="line">                var evt = document.createEvent(&quot;MouseEvents&quot;);</div><div class="line">                evt.initEvent(&quot;click&quot;, true, true);</div><div class="line">                a.dispatchEvent(evt);</div><div class="line">            &#125;</div><div class="line">            URL.revokeObjectURL(url); </div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">    xhr.send();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>&emsp;&emsp;你可能以为这样就万事大吉了，其实你错了，与此相关的是js中闭包的概念，此处不赘述，感兴趣错的同学，去网上查看，正确的代码应该是如下这样：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line">//一组数据</div><div class="line">var data = [</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名1&apos;,</div><div class="line">        nickName: &apos;昵称1&apos;,</div><div class="line">        tel: &apos;电话1&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名2&apos;,</div><div class="line">        nickName: &apos;昵称2&apos;,</div><div class="line">        tel: &apos;电话2&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名3&apos;,</div><div class="line">        nickName: &apos;昵称3&apos;,</div><div class="line">        tel: &apos;电话3&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名4&apos;,</div><div class="line">        nickName: &apos;昵称4&apos;,</div><div class="line">        tel: &apos;电话4&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">        name: &apos;姓名5&apos;,</div><div class="line">        nickName: &apos;昵称5&apos;,</div><div class="line">        tel: &apos;电话5&apos;,</div><div class="line">        email: &apos;425002189@qq.com&apos;,</div><div class="line">        note: &apos;very nice&apos;</div><div class="line">    &#125;</div><div class="line">];</div><div class="line"></div><div class="line">var URL = window.URL || window.webkitURL;</div><div class="line"></div><div class="line">for(var i = 0; i &lt; data.length; i++) &#123;</div><div class="line">    (function(i) &#123;</div><div class="line">        var qrdata = [</div><div class="line">            &apos;MECARD:&apos;,</div><div class="line">            &apos;N:&apos; + data[i].name,         //姓名</div><div class="line">            &apos;NICKNAME: &apos; + data[i].nickName,</div><div class="line">            &apos;TEL: &apos; + data[i].tel,     //电话</div><div class="line">            &apos;EMAIL: &apos; + data[i].email,    //邮箱</div><div class="line">            &apos;NOTE: &apos; + data[i].note,    //备注</div><div class="line">        ].join(&apos;;&apos;);</div><div class="line">        var xhr = new XMLHttpRequest();</div><div class="line">        var url = &apos;https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl=&apos; + qrdata + &apos;&amp;choe=UTF-8&amp;chld=L|4&apos;</div><div class="line">        xhr.open(&apos;get&apos;, url, true);</div><div class="line">        </div><div class="line">        xhr.responseType = &apos;blob&apos;;</div><div class="line">        </div><div class="line">        xhr.onload = function(e) &#123;</div><div class="line">            if (this.status == 200) &#123;</div><div class="line">                var blob = this.response;</div><div class="line">                var a = document.createElement(&apos;a&apos;); </div><div class="line">                var url = URL.createObjectURL(blob);</div><div class="line">                var filename = data[i].name + &apos;.jpg&apos;;    //以姓名来命名下载的二维码图片名称 </div><div class="line">                a.href = url; </div><div class="line">                a.download = filename; </div><div class="line">                if(document.all)&#123;</div><div class="line">                    a.click();</div><div class="line">                &#125;</div><div class="line">                else&#123;</div><div class="line">                    var evt = document.createEvent(&quot;MouseEvents&quot;);</div><div class="line">                    evt.initEvent(&quot;click&quot;, true, true);</div><div class="line">                    a.dispatchEvent(evt);</div><div class="line">                &#125;</div><div class="line">                URL.revokeObjectURL(url); </div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">        xhr.send();</div><div class="line">    &#125;)(i);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;到此截止，大功告成，快来制作自己的名片吧。如果您觉得有用，可以点击下方的赏打赏支持我哦。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div></div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/rewards/wechat.jpg" alt="wlt WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/rewards/alipy.jpg" alt="wlt Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <!--<a href="/tags/QR-Codes/" rel="tag"># QR Codes</a>-->
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/01/generate_qrcode/" rel="next" title="利用Google QR Codes API生成二维码名片（一）">
+                <i class="fa fa-chevron-left"></i> 利用Google QR Codes API生成二维码名片（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/03/generate_qrcode2/"
+           data-title="利用Google QR Codes API生成二维码名片（二）" data-url="https://nsne.github.io/2017/03/03/generate_qrcode2/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="wlt" />
+          <p class="site-author-name" itemprop="name">wlt</p>
+          <p class="site-description motion-element" itemprop="description">I &#9825 sxm</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/NsNe" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#接口回忆"><span class="nav-number">1.</span> <span class="nav-text">接口回忆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自动下载"><span class="nav-number">2.</span> <span class="nav-text">自动下载</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#美化名片"><span class="nav-number">3.</span> <span class="nav-text">美化名片</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#批量生成"><span class="nav-number">4.</span> <span class="nav-text">批量生成</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wlt</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"nsne"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js?v=5.1.0"></script>
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("YzFkmDG6iqiCBYpaEssQBcxd-gzGzoHsz", "6J9dwPA94GLWzTMMPTclOq6k");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+</body>
+</html>
