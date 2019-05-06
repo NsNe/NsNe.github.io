@@ -822,6 +822,12 @@ What is Markdown?Markdown 是一种轻量级的「标记语言」，它的优点
         guest_info:guest,
         pageSize:'10' || 10,
     });
+    var infoEle = document.querySelector('#comments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0){
+      infoEle.childNodes.forEach(function(item) {
+        item.parentNode.removeChild(item);
+      });
+    }
   </script>
 
 
