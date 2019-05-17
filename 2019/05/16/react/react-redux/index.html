@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="React,react-redux,redux," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;在react中管理数据状态，必然会用到redux，那么redux是怎么样做到这个状态的转换的，下面我们一起来学习一下吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redux createStore源码学习">
+<meta property="og:url" content="https://nsne.github.io/2019/05/16/react/react-redux/index.html">
+<meta property="og:site_name" content="NsNe的博客">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;在react中管理数据状态，必然会用到redux，那么redux是怎么样做到这个状态的转换的，下面我们一起来学习一下吧。">
+<meta property="og:updated_time" content="2019-05-16T09:25:10.100Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redux createStore源码学习">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;在react中管理数据状态，必然会用到redux，那么redux是怎么样做到这个状态的转换的，下面我们一起来学习一下吧。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://nsne.github.io/2019/05/16/react/react-redux/"/>
+
+
+
+
+
+  <title>Redux createStore源码学习 | NsNe的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?e879bc7ec8f851ab0c511067f1003a8f";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">NsNe的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Quick notes</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://nsne.github.io/2019/05/16/react/react-redux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wlt">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="NsNe的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redux createStore源码学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-16T17:08:40+08:00">
+                2019-05-16
+              </time>
+            
+
+            
+              <span class="post-meta-divider">|</span>
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-check-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">更新于&#58;</span>
+              
+              <time title="更新于" itemprop="dateModified" datetime="2019-05-16T17:25:10+08:00">
+                2019-05-16
+              </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/React/" itemprop="url" rel="index">
+                    <span itemprop="name">React</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/16/react/react-redux/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/16/react/react-redux/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/05/16/react/react-redux/" class="leancloud_visitors" data-flag-title="Redux createStore源码学习">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;在react中管理数据状态，必然会用到redux，那么redux是怎么样做到这个状态的转换的，下面我们一起来学习一下吧。</p>
+<a id="more"></a>
+<h2 id="Redux-API-和-Redux-源码结构"><a href="#Redux-API-和-Redux-源码结构" class="headerlink" title="Redux API  和  Redux 源码结构"></a>Redux API  和  Redux 源码结构</h2><h3 id="Redux-API"><a href="#Redux-API" class="headerlink" title="Redux API"></a>Redux API</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">export</span> &#123;</div><div class="line">    createStore,             <span class="comment">//创建一个state用来存储状态树</span></div><div class="line">    combineReducers,   <span class="comment">//合并reducer</span></div><div class="line">    bindActionCreators,  <span class="comment">//将dispatch和action结合</span></div><div class="line">    applyMiddleware,     <span class="comment">//调度中间件来增强store，例如中间件redux-thunk等</span></div><div class="line">    compose              <span class="comment">//从右向左组合多个函数, compose(f, g, h)会返回(...args) =&gt; f(g(h(...args)))</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="源码结构"><a href="#源码结构" class="headerlink" title="源码结构"></a>源码结构</h3><p>Redux源码结构和提供的API大体对应，如下：<br>utils——warning.js     //console中打印warning信息要用到的<br>applyMiddleware.js<br>bindActionCreators.js<br>combineReducers.js<br>compose.js<br>createStore.js<br>index.js     //export  上述定义的module</p>
+<h2 id="createStore"><a href="#createStore" class="headerlink" title="createStore"></a>createStore</h2><p>上面我们看到了redux的API和源码结构，看的出来，warning.js和index.js不用解析，都看得懂，关键时其余的几个module，那我们从最重要的createStore讲起。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">export</span> <span class="keyword">var</span> ActionTypes = &#123;</div><div class="line">     <span class="attr">INIT</span>: <span class="string">'@@redux/INIT'</span></div><div class="line"> &#125;</div><div class="line"><span class="comment">//首先定义了一个action类型，我们知道更新state的唯一方法就是dispatch一个action，这个action是用</span></div><div class="line"><span class="comment">// 来初始化state的，后面会用到它</span></div></pre></td></tr></table></figure></p>
+<p>现在来看下createStore的大体结构<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//接收三个参数</span></div><div class="line"><span class="comment">//reducer为function。当dispatch一个action时，此函数接收action来更新state</span></div><div class="line"><span class="comment">//preloadState初始化State</span></div><div class="line"><span class="comment">//enhancer 为function。用来增强store, Redux 定义有applyMiddleware来增强store，后面会</span></div><div class="line"><span class="comment">//单独讲applyMiddleware</span></div><div class="line"></div><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">createStore</span>(<span class="params">reducer, preloadedState, enhancer</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> preloadedState === <span class="string">'function'</span> &amp;&amp; <span class="keyword">typeof</span> enhancer === <span class="string">'undefined'</span>) &#123;</div><div class="line">        <span class="comment">//如果只传了两个参数，并且第二个参数为函数，第二个参数会被当作enhancer</span></div><div class="line">        enhancer = preloadedState</div><div class="line">        preloadedState = <span class="literal">undefined</span></div><div class="line">    &#125;</div><div class="line">  </div><div class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> enhancer !== <span class="string">'undefined'</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> enhancer !== <span class="string">'function'</span>) &#123;</div><div class="line">            <span class="comment">//校验enhancer是否为函数，如果不是函数则抛出异常</span></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'Expected the enhancer to be a function.'</span>)</div><div class="line">        &#125;</div><div class="line">        <span class="comment">//如果enhancer存在且为函数，那么则返回如下调用，如果enhancer为applyMiddleware，那么调用则</span></div><div class="line">        <span class="comment">//是applyMiddleware(middleware1, middleware2, middleware3...)(createStore)(reducer, preloadedState)。后面讲applyMiddleware再详细讲。</span></div><div class="line">        <span class="keyword">return</span> enhancer(createStore)(reducer, preloadedState)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> reducer !== <span class="string">'function'</span>) &#123;</div><div class="line">        <span class="comment">//校验reducer是否为函数</span></div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'Expected the reducer to be a function.'</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">var</span> currentReducer = reducer</div><div class="line">    <span class="comment">//得到reducer</span></div><div class="line"></div><div class="line">    <span class="keyword">var</span> currentState = preloadedState</div><div class="line">    <span class="comment">//得到初始init，没有传递则为undefined</span></div><div class="line"></div><div class="line">    <span class="keyword">var</span> currentListeners = []</div><div class="line">    <span class="comment">//定义一个数组用来存放listeners。就是一个函数数组，当state发生改变时，会循环执行这个数组里面的函数</span></div><div class="line"></div><div class="line">    <span class="keyword">var</span> nextListeners = currentListeners</div><div class="line">    <span class="comment">//用来存储下一次的listeners数组。为什么要有这个listeners数组呢？因为当state发生改变时，我们根据</span></div><div class="line">    <span class="comment">//上面的currentListeners来循环执行函数，但是在这执行这些函数时，函数内部可能取消或者添加订阅</span></div><div class="line">    <span class="comment">//（state改变时，添加或者取消执行函数），这时如果直接操作currentListeners ，相当于在循环</span></div><div class="line">    <span class="comment">//内部修改循环条件，执行瞬间就乱套了，有没有啊，有没有</span></div><div class="line"></div><div class="line">    <span class="keyword">var</span> isDispatching = <span class="literal">false</span></div><div class="line">    <span class="comment">//reducer函数是否正在执行的标识</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">ensureCanMutateNextListeners</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="comment">//拷贝currentListeners一份为nextListeners,这样nextListeners的改变不会引起currentListeners的改变</span></div><div class="line">        <span class="comment">//（上面解释过原因啦）</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">dispatch</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="comment">//触发action去执行reducer，更新state</span></div><div class="line">        .....</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">subscribe</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="comment">//接收一个函数参数，订阅state的改变。当state改变时会执行这个函数</span></div><div class="line">        ....</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">getState</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="comment">//获取state树</span></div><div class="line">        ....</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">replaceReducer</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="comment">//替换reducer</span></div><div class="line">        ....</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">observable</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="comment">//没用，不解释（后面有解释）</span></div><div class="line">        ......</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    dispatch(&#123; <span class="attr">type</span>: ActionTypes.INIT &#125;)</div><div class="line">    <span class="comment">//执行dispatch函数，初始化state</span></div><div class="line"></div><div class="line">    <span class="keyword">return</span> &#123;</div><div class="line">        <span class="comment">//真正的返回，执行createStore其实返回的就是这些东东</span></div><div class="line">        dispatch,       <span class="comment">//触发action去执行reducer，更新state</span></div><div class="line">        subscribe,     <span class="comment">//订阅state改变，state改变时会执行subscribe的参数（自己定义的一个函数）</span></div><div class="line">        getState,      <span class="comment">//获取state树</span></div><div class="line">        replaceReducer,       <span class="comment">//替换reducer</span></div><div class="line">        [$$observable]: observable         </div><div class="line">        <span class="comment">//redux内部用的，对我们来说没用（非要深究它写这是干嘛的？咋跟</span></div><div class="line">        <span class="comment">//我一样死脑筋呢，都说了没用啦。算了，还是告诉你把，就是内部用的，在测试代码中会用到，感兴</span></div><div class="line">        <span class="comment">//趣的可以去test目录下查看）</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>现在是不是感觉明朗（懵逼）了许多，懵逼就对了，接下来我们再来解析一下dispatch, subscribe等函数的具体实现，或许会让你明朗（更懵逼）起来<br>看了上面的大体结构，我们明白以下这些就够了。<br>createStore是一个函数，它定义了一些变量（currentState, currentListeners等）及函数（dispatch, subscribe等），并且调用了dispatch，最后返回一个对象，该对象包含的就是dispatch和subscribe等函数。接下来我们来解析这些函数。<br>createStore里面只调用了一个函数，那就是dispatch，那我们就从这里开始讲起。</p>
+<h3 id="dispatch"><a href="#dispatch" class="headerlink" title="dispatch"></a>dispatch</h3><p>它是这样被调用的，有没有很熟悉。。。<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dispatch(&#123; <span class="attr">type</span>: ActionTypes.INIT &#125;)</div></pre></td></tr></table></figure></p>
+<p>来看看dispatch的源码<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">dispatch</span>(<span class="params">action</span>) </span>&#123;</div><div class="line">  <span class="comment">//校验action参数，必须为一个纯粹的对象。这也说明了，我们不能直接在redux做异步请求，而是需要</span></div><div class="line">  <span class="comment">//使用applyMiddleware去应用一些中间件。比如redux-thunk等</span></div><div class="line">  <span class="keyword">if</span> (!isPlainObject(action)) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(</div><div class="line">      <span class="string">'Actions must be plain objects. '</span> +</div><div class="line">      <span class="string">'Use custom middleware for async actions.'</span></div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">  <span class="comment">//同样是校验参数，不解释，相信都能看懂</span></div><div class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> action.type === <span class="string">'undefined'</span>) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(</div><div class="line">      <span class="string">'Actions may not have an undefined "type" property. '</span> +</div><div class="line">      <span class="string">'Have you misspelled a constant?'</span></div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">  <span class="comment">//判断是否正在执行reducers函数，如果正在执行，此action不会触发，那有人就问题了，那是不是我</span></div><div class="line">  <span class="comment">//的dispatch不会起作用，导致state没有更新，数据是错误的？ 答案是state是不会有错。因为redux本</span></div><div class="line">  <span class="comment">//身整个更新state的过程是同步的，从dipatch——&gt;reducers——&gt;state。所以这段代码意在你定义的</span></div><div class="line">  <span class="comment">//reducers函数中不允许调用dispatch</span></div><div class="line">  <span class="keyword">if</span> (isDispatching) &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'Reducers may not dispatch actions.'</span>)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">try</span> &#123;</div><div class="line">    <span class="comment">//设置标识为，并且执行currentReducer，还记得吗？这个我们通过参数获取到的一个函数，往往是我</span></div><div class="line">    <span class="comment">//们调用combineReducers返回，combineReducers我们后面解析</span></div><div class="line">    isDispatching = <span class="literal">true</span></div><div class="line">    <span class="comment">//调用reducers函数</span></div><div class="line">    currentState = currentReducer(currentState, action)</div><div class="line">  &#125; <span class="keyword">finally</span> &#123;</div><div class="line">    isDispatching = <span class="literal">false</span></div><div class="line">  &#125;</div><div class="line">  <span class="comment">//调用所有订阅state改变的函数，这些函数就可以通过getState函数获取到最新的state值。订阅的函数</span></div><div class="line">  <span class="comment">//从哪里来呢，从subscribe中来， 我们后面来解析subscribe和getState</span></div><div class="line">  <span class="keyword">var</span> listeners = currentListeners = nextListeners</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; listeners.length; i++) &#123;</div><div class="line">    listeners[i]()</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> action</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/rewards/wechat.jpg" alt="wlt 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/rewards/alipy.jpg" alt="wlt 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/React/" rel="tag"># React</a>
+          
+            <a href="/tags/react-redux/" rel="tag"># react-redux</a>
+          
+            <a href="/tags/redux/" rel="tag"># redux</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/16/react/react-event/" rel="next" title="React组件中的事件处理函数">
+                <i class="fa fa-chevron-left"></i> React组件中的事件处理函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/16/vue/vue-split-code/" rel="prev" title="Vue代码分割懒加载">
+                Vue代码分割懒加载 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="wlt" />
+            
+              <p class="site-author-name" itemprop="name">wlt</p>
+              <p class="site-description motion-element" itemprop="description">I &#9825 sxm</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/NsNe" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://weibo.com/u/5116919997" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Redux-API-和-Redux-源码结构"><span class="nav-number">1.</span> <span class="nav-text">Redux API  和  Redux 源码结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Redux-API"><span class="nav-number">1.1.</span> <span class="nav-text">Redux API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码结构"><span class="nav-number">1.2.</span> <span class="nav-text">源码结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#createStore"><span class="nav-number">2.</span> <span class="nav-text">createStore</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dispatch"><span class="nav-number">2.1.</span> <span class="nav-text">dispatch</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wlt</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = '';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'YzFkmDG6iqiCBYpaEssQBcxd-gzGzoHsz',
+        appKey: '6J9dwPA94GLWzTMMPTclOq6k',
+        placeholder: '参与交流',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+    var infoEle = document.querySelector('#comments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0){
+      infoEle.childNodes.forEach(function(item) {
+        item.parentNode.removeChild(item);
+      });
+    }
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("YzFkmDG6iqiCBYpaEssQBcxd-gzGzoHsz", "6J9dwPA94GLWzTMMPTclOq6k");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
