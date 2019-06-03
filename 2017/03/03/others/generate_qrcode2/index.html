@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="&amp;emsp;&amp;emsp;继上一篇文章http://www.nsne-taoge.cn/2017/03/01/others/generate_qrcode/#more（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个">
+<meta name="description" content="&amp;emsp;&amp;emsp;继上一篇文章利用Google QR Codes API生成二维码名片（一）（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个保存太慢了，生成的名片还不好看，爱美之心，人皆有之，要不然别人一扫">
 <meta property="og:type" content="article">
 <meta property="og:title" content="利用Google QR Codes API生成二维码名片（二）">
 <meta property="og:url" content="https://nsne.github.io/2017/03/03/others/generate_qrcode2/index.html">
 <meta property="og:site_name" content="NsNe的博客">
-<meta property="og:description" content="&amp;emsp;&amp;emsp;继上一篇文章http://www.nsne-taoge.cn/2017/03/01/others/generate_qrcode/#more（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;继上一篇文章利用Google QR Codes API生成二维码名片（一）（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个保存太慢了，生成的名片还不好看，爱美之心，人皆有之，要不然别人一扫">
 <meta property="og:image" content="https://nsne.github.io/images/helloWorld.png">
 <meta property="og:image" content="https://nsne.github.io/images/qrcode1.jpg">
 <meta property="og:image" content="https://nsne.github.io/images/qrcode1-result.png">
-<meta property="og:updated_time" content="2019-06-03T03:36:10.960Z">
+<meta property="og:updated_time" content="2019-06-03T03:43:59.075Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="利用Google QR Codes API生成二维码名片（二）">
-<meta name="twitter:description" content="&amp;emsp;&amp;emsp;继上一篇文章http://www.nsne-taoge.cn/2017/03/01/others/generate_qrcode/#more（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个">
+<meta name="twitter:description" content="&amp;emsp;&amp;emsp;继上一篇文章利用Google QR Codes API生成二维码名片（一）（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个保存太慢了，生成的名片还不好看，爱美之心，人皆有之，要不然别人一扫">
 <meta name="twitter:image" content="https://nsne.github.io/images/helloWorld.png">
 
 
@@ -320,7 +320,7 @@
               
                 <span class="post-meta-item-text">更新于&#58;</span>
               
-              <time title="更新于" itemprop="dateModified" datetime="2019-06-03T11:36:10+08:00">
+              <time title="更新于" itemprop="dateModified" datetime="2019-06-03T11:43:59+08:00">
                 2019-06-03
               </time>
             
@@ -397,7 +397,7 @@
       
 
       
-        <p>&emsp;&emsp;继上一篇文章<a href="http://www.nsne-taoge.cn/2017/03/01/others/generate_qrcode/#more" target="_blank" rel="external">http://www.nsne-taoge.cn/2017/03/01/others/generate_qrcode/#more</a>（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个保存太慢了，生成的名片还不好看，爱美之心，人皆有之，要不然别人一扫，就尴尬了）。在上篇文章中我们说了，Google API生成二维码，实质上就是发送一系列参数的请求，返回结果是一个二维码。这时，就有小伙伴发现了，你这还不是一个个发请求，一个个手动保存，而且名片也丑的不忍直视（没有任何的修饰）。接下来，我们来解决这两个关键问题，一、自动下载保存（即可以批量生成）, 二、名片太丑啦。</p>
+        <p>&emsp;&emsp;继上一篇文章<a href="http://www.nsne-taoge.cn/2017/03/01/others/generate_qrcode/#more" target="_blank" rel="external">利用Google QR Codes API生成二维码名片（一）</a>（利用Google QR Codes API生成二维码）之后，现在终于有时间来继续钻研一下Google API在制作二维码名片中的使用。最原始的需求是这样的，要批量生成二维码名片，故不能用草料二维码等在线二维码生成工具（一个个点，一个个保存太慢了，生成的名片还不好看，爱美之心，人皆有之，要不然别人一扫，就尴尬了）。在上篇文章中我们说了，Google API生成二维码，实质上就是发送一系列参数的请求，返回结果是一个二维码。这时，就有小伙伴发现了，你这还不是一个个发请求，一个个手动保存，而且名片也丑的不忍直视（没有任何的修饰）。接下来，我们来解决这两个关键问题，一、自动下载保存（即可以批量生成）, 二、名片太丑啦。</p>
 <a id="more"></a>
 <h1 id="接口回忆"><a href="#接口回忆" class="headerlink" title="接口回忆"></a>接口回忆</h1><p>&emsp;&emsp;我们调用Google生成二维码的接口为<a href="https://chart.googleapis.com/chart，参数及其含义如下：" target="_blank" rel="external">https://chart.googleapis.com/chart，参数及其含义如下：</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">cht=qr    必须的参数   指定是一个二维码  例: cht=qr</div><div class="line">chs=&lt;width&gt;x&lt;height&gt;    必须的参数   指定图片的大小</div><div class="line">chl=&lt;data&gt;   必须的参数   指定内容</div><div class="line">choe=&lt;output_encoding&gt;  可选的参数   内容的编码，默认为utf-8，可选的有: UTF-8(默认就是这个),  Shift_JIS, ISO-8859-1</div><div class="line">chld=&lt;error_correction_level&gt;|&lt;margin&gt;   可选的参数    error_correction_level为错误纠正， L(默认): 允许恢复高达7%的数据丢失  M: 允许回复高达15%的数据丢失 Q: 25% H:30%</div><div class="line">                                                      margin   数据部分周围的白色边框的宽度，单位是行，不是html中的像素，默认为4</div></pre></td></tr></table></figure></p>
 <p>实质上发送一个请求就得到了一个二维码，其中chl参数表示我们在扫码之后的数据(这个二维码扫描后显示”hello世界”):</p>
